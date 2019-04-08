@@ -14,6 +14,18 @@ const routes: Routes = [
   {
     path: 'list',
     loadChildren: './list/list.module#ListPageModule'
+  },
+  { 
+    path: 'setting', 
+    loadChildren: './setting/setting.module#SettingPageModule' 
+  },
+  { 
+    path: 'newdoc', 
+    loadChildren: './newdoc/newdoc.module#NewdocPageModule' 
+  },
+  { 
+    path: 'qrcode', 
+    loadChildren: './qrcode/qrcode.module#QrcodePageModule' 
   }
 ];
 
