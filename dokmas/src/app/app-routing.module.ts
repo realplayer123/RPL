@@ -26,7 +26,8 @@ const routes: Routes = [
   { 
     path: 'qrcode', 
     loadChildren: './qrcode/qrcode.module#QrcodePageModule' 
-  }
+  },  { path: 'login', loadChildren: './login/login.module#LoginPageModule' }
+
 ];
 
 @NgModule({
