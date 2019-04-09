@@ -26,7 +26,10 @@ const routes: Routes = [
   { 
     path: 'qrcode', 
     loadChildren: './qrcode/qrcode.module#QrcodePageModule' 
-  },  { path: 'login', loadChildren: './login/login.module#LoginPageModule' }
+  },
+  { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
+  { path:  'register', loadChildren:  './auth/register/register.module#RegisterPageModule' },
+  { path: 'login', loadChildren: './auth/login/login.module#LoginPageModule' }
 
 ];
 
