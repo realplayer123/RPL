@@ -6,12 +6,19 @@
     <ion-title>
       Home
     </ion-title>
-    
+
+    <!-- ION NOTIFICATION -->
+    <ion-buttons end slot="end">
+      <button PopoverPresent (click)="presentPopover($event)">
+      <ion-icon name="notifications"></ion-icon>
+      </button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+ 
     <!-- ION CARD -->
     <ion-card class="welcome-card">
       <ion-img src="/assets/shapes.svg"></ion-img>

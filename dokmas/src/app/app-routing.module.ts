@@ -22,7 +22,8 @@ const routes: Routes = [
   { 
     path: 'login', 
     loadChildren: './auth/login/login.module#LoginPageModule' 
-  }
+  },
+  { path: 'popover', loadChildren: './popover/popover.module#PopoverPageModule' }
 
 ];
 

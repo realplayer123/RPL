@@ -10,6 +10,7 @@
       
       <ion-content>
         <ion-list>
+
           <!-- TOGGLE MENU -->
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
             <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
@@ -22,8 +23,9 @@
 
         </ion-list>
       </ion-content>
-    
-      <ion-button>Log Out</ion-button>
+      
+      <!-- href="/login" untuk sementara -->
+      <ion-button href="/login">Log Out</ion-button>
     </ion-menu>
 
     <ion-router-outlet main></ion-router-outlet>
