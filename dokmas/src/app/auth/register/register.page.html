@@ -14,6 +14,22 @@
               <ion-input name="email" type="email" placeholder="your@email.com" ngModel required></ion-input>
             </ion-item>
             <ion-item>
+                <ion-label>Tempat</ion-label>
+                <ion-select placeholder="Select One">
+                  <ion-select-option value="JAK">Jakarta</ion-select-option>
+                  <ion-select-option value="BOO">Bogor</ion-select-option>
+                  <ion-select-option value="BEK">Bekasi</ion-select-option>
+                  <ion-select-option value="TNG">Tangerang</ion-select-option>
+                  <ion-select-option value="DPK">Depok</ion-select-option>
+                  <ion-select-option value="BDG">Bandung</ion-select-option>
+                  <ion-select-option value="SKB">Sukabumi</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>Tanggal Lahir</ion-label>
+                <ion-datetime display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY"></ion-datetime>
+            </ion-item>
+            <ion-item>
               <ion-input name="password" type="password" placeholder="Password" ngModel required></ion-input>
             </ion-item>
             <ion-item>
