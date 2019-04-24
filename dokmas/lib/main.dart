@@ -105,6 +105,22 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
 
+    final forgotLabel = FlatButton(
+      child: Text(
+        'Forgot password?',
+        style: TextStyle(color: Colors.black54),
+      ),
+      onPressed: () {},
+    );
+
+    final daftar = FlatButton(
+      child: Text(
+        'Belum punya akun? Daftar disini.',
+        style: TextStyle(color: Colors.black54),
+      ),
+      onPressed: () {},
+    );
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -125,16 +141,15 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 emailField,
                 SizedBox(
-                  height: 25.0,
+                  height: 10.0,
                 ),
                 passField,
                 SizedBox(
-                  height: 35.0,
+                  height: 30.0,
                 ),
                 loginButton,
-                SizedBox(
-                  height: 15.0,
-                )
+                forgotLabel,
+                daftar
               ],
             ),
           ),

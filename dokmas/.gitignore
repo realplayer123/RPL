@@ -24,6 +24,7 @@
 .flutter-plugins
 .packages
 .pub-cache/
+node_modules/
 .pub/
 /build/
 
