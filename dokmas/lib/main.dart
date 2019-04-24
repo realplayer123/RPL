@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 // Login Page
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -164,18 +163,29 @@ class LoginPageState extends State<LoginPage> {
 class HomePage extends StatelessWidget {
   // autentikasi disini
 
+  String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
   @override 
   Widget build(BuildContext context) {
     Widget mainDrawer = Drawer(
     child: ListView(
       padding: EdgeInsets.zero,
       children: <Widget>[
-        DrawerHeader(
-          child: Text('Nama user'),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-          ),
-        ),
+        new UserAccountsDrawerHeader(
+              accountEmail: new Text("Email@e-mail.com"),
+              accountName: new Text("Nama"),
+              currentAccountPicture: new GestureDetector(
+                child: new CircleAvatar(
+                  backgroundImage: new NetworkImage(currentProfilePic),
+                ),
+                onTap: () => print("This is your current account."),
+              ),
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                  image: new NetworkImage("https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
+                  fit: BoxFit.fill
+                )
+              ),
+            ),
         ListTile(
           title: Text('Dokumen baru'),
           onTap: () {},
