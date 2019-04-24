@@ -194,6 +194,16 @@ class HomePage extends StatelessWidget {
           title: Text('Setting'),
           onTap: () {},
         ),
+        Divider(),
+        ListTile(
+          title: Text('Keluar'),
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              '/'
+            );
+          },
+        ),
        ],
       ),
     );
