@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 
 void main() {
   runApp(
@@ -162,8 +164,15 @@ class LoginPageState extends State<LoginPage> {
 // Home Page
 class HomePage extends StatelessWidget {
   // autentikasi disini
-
+  
+  int __counter =0;
+  static List items;
   String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
+ 
+  void initState(){
+
+  }
+
   @override 
   Widget build(BuildContext context) {
     Widget mainDrawer = Drawer(
@@ -177,7 +186,6 @@ class HomePage extends StatelessWidget {
                 child: new CircleAvatar(
                   backgroundImage: new NetworkImage(currentProfilePic),
                 ),
-                onTap: () => print("This is your current account."),
               ),
               decoration: new BoxDecoration(
                 image: new DecorationImage(
@@ -188,10 +196,16 @@ class HomePage extends StatelessWidget {
             ),
         ListTile(
           title: Text('Dokumen baru'),
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              '/grid'
+            );
+          },
         ),
         ListTile(
           title: Text('Setting'),
+          
           onTap: () {},
         ),
         Divider(),
@@ -212,42 +226,26 @@ class HomePage extends StatelessWidget {
         title: Text("Beranda"),
       ),
       drawer: mainDrawer,
-      body: ListView(
-        padding: const EdgeInsets.all(100.0),
-        children: <Widget>[
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-          Center(
-            child: Text("Satuuu... !"),
-          ),
-        ],
+      body: GridView.count(
+          // Create a grid with 3 columns. If you change the scrollDirection to
+          // horizontal, this would produce 2 rows (if the rows exceed the screen).
+          crossAxisCount: 3,
+          // Generate 100 Widgets that display their index in the List
+          children: List.generate(9, (index) {
+            return Container(
+              margin: EdgeInsets.all(8.0),
+              decoration: BoxDecoration(color: Colors.teal),
+              child: Center(
+                child: Text(
+                  'Item $index',
+                  style: Theme.of(context).textTheme.headline,
+                ),
+              ),
+            );
+          }),
       ),
     );
+    
   }
 
   // Drawer a.k.a side menu
