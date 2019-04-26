@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 
@@ -8,6 +9,7 @@ void main() {
      initialRoute: "/",
      routes: {
         "/" : (context) => LoginPage(),
+        "/daftar": (context) => SignUpPage(),
         "/home": (context) => HomePage(),
      }, 
     )
@@ -28,6 +30,202 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+class SignUpPage extends StatefulWidget{
+  @override
+  _SignUpState createState() => new _SignUpState();
+}
+class _SignUpState extends State<SignUpPage>{
+  
+  var agama=['Islam', 'Kristen', 'Katolik', 'Buddha', 'Konghucu', 'Hindu'];
+
+  String gender = "";
+  var _currentAgama = "Islam";
+
+  TextEditingController controllerNama= new TextEditingController();
+  TextEditingController controllerPass= new TextEditingController();
+  TextEditingController controllerEmail= new TextEditingController();
+
+String _date = '';
+
+  Future _selectDate() async {
+    DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: new DateTime.now(),
+        firstDate: new DateTime(1920),
+        lastDate: new DateTime(2019)
+    );
+    if(picked != null) setState(() => _date = picked.toString());
+  }
+
+
+void _pilihjk(String value){
+  setState(() {
+    gender=value;
+  });
+}
+
+void submit(){
+  AlertDialog alertDialog =new AlertDialog(
+    content:  new Container(
+      height: 260.0,
+      child: new Column(
+        children: <Widget>[
+          new Text("Nama Lengkap : ${controllerNama.text}"),
+          new Text("Email : ${controllerEmail.text}"),
+          new Text("Tanggal Lahir : $_date"),
+          new Text("Kata Sandi : ${controllerPass.text}"),
+          new Text("Jenis Kelamin : $gender"),
+          new Text("Agama : $_currentAgama"),
+           
+        ],
+      ),
+    )
+  );
+}
+
+  @override
+  Widget build(BuildContext context){
+    return new Scaffold(
+      appBar: new AppBar(
+        //leading: new Icon(Icons, list) buat icon
+        title: new Text("Daftar"),
+        backgroundColor: Colors.indigo,
+      ),
+      
+      body: new ListView(
+        children: <Widget>[
+          new Container(
+            padding: new EdgeInsets.all(10),
+              child: new Column(
+                children: <Widget>[
+                  new TextField(
+                    controller: controllerNama,
+                    decoration: new InputDecoration(
+                      hintText: "Nama Lengkap",
+                      labelText: "Nama Lengkap",
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(20.0)
+                      )
+                    ),
+                  ),
+
+                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                  
+                  new TextField(
+                    controller: controllerEmail,
+                    decoration: new InputDecoration(
+                      hintText: "Email",
+                      labelText: "contoh: email@mail.com  ",
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(20.0)
+                      )
+                    ),
+                  ),
+                  
+                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                
+                  new Row(
+                    children: <Widget>[
+                      new Text("Tanggal Lahir", style:  new TextStyle(fontSize: 15.0, color: Colors.black87),),
+                      new Text(_date),
+                      new RaisedButton(
+                        onPressed: _selectDate,
+                        child: new Text('Click me'),
+                      )
+                    ],
+                  ),
+
+                  new Padding(padding: new EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0)),
+                  new TextField(
+                    controller: controllerPass,
+                    obscureText: true,
+                    decoration: new InputDecoration(
+                      hintText: "Kata Sandi",
+                      labelText: "Kata Sandi",
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(32.0)
+                      )
+                    ),
+                  ),
+
+                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                  new TextField(
+                    obscureText: true,
+                    decoration: new InputDecoration(
+                      hintText: "Ulangi Kata Sandi",
+                      labelText: "Ulangi Kata Sandi",
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(32.0)
+                      )
+                    ),
+                  ),
+
+                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                  new RadioListTile(
+                    value: "L",
+                    title: new Text("Laki-laki"),
+                    groupValue: gender,
+                    onChanged: (String value){
+                      _pilihjk(value);
+                    },
+                    activeColor: Colors.blueGrey,
+
+                  ),
+
+                  new RadioListTile(
+                    value: "P",
+                    title: new Text("Perempuan"),
+                    groupValue: gender,
+                    onChanged: (String value){
+                      _pilihjk(value);
+                    },
+                    activeColor: Colors.blueGrey,
+
+                  ),
+
+                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                  
+                  new Row(
+                    children: <Widget>[
+                      new Text("Agama", style:  new TextStyle(fontSize: 20.0, color: Colors.black87)),
+                      new DropdownButton<String>(
+                        items: agama.map((String dropdownStringItem){
+                          return new DropdownMenuItem<String>(
+                            value: dropdownStringItem,
+                            child: new Text(dropdownStringItem),
+                          );
+                        }).toList(),
+                        onChanged: (String value){
+                           setState(() {
+                             this._currentAgama = value;
+                           }); 
+                        },
+                        value: _currentAgama,
+                      ),
+                    ],
+                  ),
+
+                  
+
+                  new RaisedButton(
+                    child: new Text("DAFTAR"),
+                    color: Colors.green,
+                    onPressed: (){submit();
+                      Navigator.pushNamed(
+                        context,
+                        '/home'
+                      );
+                    },
+                  )
+                ],
+              ),
+          )
+        ],
+      )
+    );
+  }
+}
+
 
 // Login Page
 class LoginPage extends StatefulWidget {
@@ -119,7 +317,12 @@ class LoginPageState extends State<LoginPage> {
         'Belum punya akun? Daftar disini.',
         style: TextStyle(color: Colors.black54),
       ),
-      onPressed: () {},
+      onPressed: (){
+        Navigator.pushNamed(
+          context,
+          '/daftar'
+        );
+      } 
     );
 
     return Scaffold(
@@ -161,11 +364,12 @@ class LoginPageState extends State<LoginPage> {
 
 }
 
+
+
 // Home Page
 class HomePage extends StatelessWidget {
   // autentikasi disini
   
-  int __counter =0;
   static List items;
   String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
  
