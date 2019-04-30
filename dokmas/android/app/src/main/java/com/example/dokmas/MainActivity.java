@@ -1,4 +1,4 @@
-package com.example.dokmas;
+package io.rpl.dokmas;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

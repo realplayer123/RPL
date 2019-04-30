@@ -1,32 +1,22 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 
-void main() {
-  runApp(
-    MaterialApp(
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
      initialRoute: "/",
      routes: {
         "/" : (context) => LoginPage(),
         "/daftar": (context) => SignUpPage(),
-        "/home": (context) => HomePage(),
      }, 
-    )
-  );
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-
-    return MaterialApp(
-      title: 'Dokumen Masyarakat',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginPage(title : 'Login Page'),
     );
   }
 }
@@ -34,6 +24,7 @@ class SignUpPage extends StatefulWidget{
   @override
   _SignUpState createState() => new _SignUpState();
 }
+
 class _SignUpState extends State<SignUpPage>{
   
   var agama=['Islam', 'Kristen', 'Katolik', 'Buddha', 'Konghucu', 'Hindu'];
@@ -64,7 +55,7 @@ void _pilihjk(String value){
   });
 }
 
-void submit(){
+AlertDialog submit(){
   AlertDialog alertDialog =new AlertDialog(
     content:  new Container(
       height: 260.0,
@@ -81,6 +72,7 @@ void submit(){
       ),
     )
   );
+  return alertDialog;
 }
 
   @override
@@ -128,6 +120,7 @@ void submit(){
                     children: <Widget>[
                       new Text("Tanggal Lahir", style:  new TextStyle(fontSize: 15.0, color: Colors.black87),),
                       new Text(_date),
+                      new SizedBox(width: 20.0,),
                       new RaisedButton(
                         onPressed: _selectDate,
                         child: new Text('Click me'),
@@ -188,6 +181,7 @@ void submit(){
                   new Row(
                     children: <Widget>[
                       new Text("Agama", style:  new TextStyle(fontSize: 20.0, color: Colors.black87)),
+                      new SizedBox(width: 20.0,),
                       new DropdownButton<String>(
                         items: agama.map((String dropdownStringItem){
                           return new DropdownMenuItem<String>(
@@ -210,11 +204,9 @@ void submit(){
                   new RaisedButton(
                     child: new Text("DAFTAR"),
                     color: Colors.green,
-                    onPressed: (){submit();
-                      Navigator.pushNamed(
-                        context,
-                        '/home'
-                      );
+                    onPressed: (){
+                      submit();
+                      
                     },
                   )
                 ],
@@ -248,6 +240,38 @@ class LoginPageState extends State<LoginPage> {
   final colorButton = 0xff01A0C7;
   final _hor = 15.0;
   final _ver = 20.0;
+
+  // Sign in with google
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = new GoogleSignIn();
+
+  Future<FirebaseUser> _signIn(BuildContext context) async {
+    
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    FirebaseUser userDetails = await _firebaseAuth.signInWithCredential(credential);
+    ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
+
+    List<ProviderDetails> providerData = new List<ProviderDetails>();
+    providerData.add(providerInfo);
+
+    UserDetails details = new UserDetails(userDetails.providerId, userDetails.displayName,
+      userDetails.photoUrl,
+      userDetails.email,
+      providerData);
+
+    Navigator.push(context, 
+      MaterialPageRoute(
+        builder: (context) => HomePage(details)
+      )
+    );
+    return userDetails;
+  }
 
   @override 
   Widget build(BuildContext context){
@@ -288,10 +312,7 @@ class LoginPageState extends State<LoginPage> {
         padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
         // untuk validasi email dan password di sini
         onPressed: () {
-          Navigator.pushNamed(
-            context,
-            '/home'
-          );
+          
         },
         child: Text(
           "Login",
@@ -325,6 +346,28 @@ class LoginPageState extends State<LoginPage> {
       } 
     );
 
+    final googleButton = Material(
+      elevation: 5.0,
+      borderRadius: BorderRadius.circular(30.0),
+      color: Colors.blueAccent,
+      child: MaterialButton(
+        minWidth: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
+        // untuk validasi email dan password di sini
+        onPressed: () => _signIn(context)
+                        .then((FirebaseUser user) => print(user))
+                        .catchError((e)=>print(e)),
+        child: Text(
+          "Sign In With Google",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -352,6 +395,10 @@ class LoginPageState extends State<LoginPage> {
                   height: 30.0,
                 ),
                 loginButton,
+                SizedBox(
+                  height: 10.0,
+                ),
+                googleButton,
                 forgotLabel,
                 daftar
               ],
@@ -368,8 +415,12 @@ class LoginPageState extends State<LoginPage> {
 
 // Home Page
 class HomePage extends StatelessWidget {
+  static const routeName = '/home';
+
   // autentikasi disini
-  
+  final UserDetails detailsUser;
+  HomePage(this.detailsUser);
+
   static List items;
   String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
  
@@ -379,16 +430,23 @@ class HomePage extends StatelessWidget {
 
   @override 
   Widget build(BuildContext context) {
+    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+    final GoogleSignIn _gSignIn = new GoogleSignIn();
+    void _googleSignOut() async {
+      await _firebaseAuth.signOut();
+      await _gSignIn.signOut();
+    }
+
     Widget mainDrawer = Drawer(
     child: ListView(
       padding: EdgeInsets.zero,
       children: <Widget>[
         new UserAccountsDrawerHeader(
-              accountEmail: new Text("Email@e-mail.com"),
-              accountName: new Text("Nama"),
+              accountEmail: new Text(detailsUser.userEmail),
+              accountName: new Text(detailsUser.userName),
               currentAccountPicture: new GestureDetector(
                 child: new CircleAvatar(
-                  backgroundImage: new NetworkImage(currentProfilePic),
+                  backgroundImage: new NetworkImage(detailsUser.photoUrl),
                 ),
               ),
               decoration: new BoxDecoration(
@@ -401,10 +459,7 @@ class HomePage extends StatelessWidget {
         ListTile(
           title: Text('Dokumen baru'),
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/grid'
-            );
+            
           },
         ),
         ListTile(
@@ -416,10 +471,8 @@ class HomePage extends StatelessWidget {
         ListTile(
           title: Text('Keluar'),
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/'
-            );
+            _googleSignOut();
+            Navigator.pushNamed(context, '/');
           },
         ),
        ],
@@ -448,10 +501,20 @@ class HomePage extends StatelessWidget {
             );
           }),
       ),
-    );
-    
+    ); 
   }
+}
 
-  // Drawer a.k.a side menu
+class UserDetails {
+  final String providerDetail;
+  final String userName;
+  final String photoUrl;
+  final String userEmail;
+  final List<ProviderDetails> providerData;
+  UserDetails(this.providerDetail,this.userName,this.photoUrl,this.userEmail,this.providerData);
+}
 
+class ProviderDetails {
+  ProviderDetails(this.providerDetail);
+  final String providerDetail;
 }

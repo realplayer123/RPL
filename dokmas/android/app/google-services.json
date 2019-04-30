@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "394664023708",
+    "firebase_url": "https://dokmas-rpl.firebaseio.com",
+    "project_id": "dokmas-rpl",
+    "storage_bucket": "dokmas-rpl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394664023708:android:2ba8baa62e356e62",
+        "android_client_info": {
+          "package_name": "io.rpl.dokmas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394664023708-q1pr9k9ulkslmn1iufkh24ovqtuf78iu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.rpl.dokmas",
+            "certificate_hash": "fe8b68998b45dfd82bc9e6f00a900f23affae858"
+          }
+        },
+        {
+          "client_id": "394664023708-bdubmfukrcpvo7ljn82td5rc3eaghlm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqa70FNTOwM65DYp-4o9F8_BVYq2FQXMc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394664023708-bdubmfukrcpvo7ljn82td5rc3eaghlm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
