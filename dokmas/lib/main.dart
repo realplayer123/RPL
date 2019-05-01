@@ -206,7 +206,7 @@ AlertDialog submit(){
                     color: Colors.green,
                     onPressed: (){
                       submit();
-                      
+                      Navigator.pushNamed(context, '/home');
                     },
                   )
                 ],
@@ -232,6 +232,35 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  String _email;
+  String _pass;
+
+  final formKey = new GlobalKey<FormState>();
+
+  bool validateandSave(){
+    final form = formKey.currentState;
+    if(form.validate()) {
+      form.save();
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  void validateandSubmit() async{
+    if(validateandSave()){
+      try{
+        FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _pass);
+        print('masuk: ${user.uid}');
+
+      }
+      catch(e){
+        print('err: $e');
+      }
+    }
+  }
+
   // Validasi
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
@@ -275,56 +304,6 @@ class LoginPageState extends State<LoginPage> {
 
   @override 
   Widget build(BuildContext context){
-    final emailField = TextFormField(
-      controller: _emailController,
-      validator: (value) {
-        if (value.isEmpty) return "Masukan Email";
-        if (value.length < 5 ) return "Email terlalu pendek";
-      },
-      obscureText: false,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        hintText: "Email",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
-    );
-
-    final passField = TextFormField(
-      controller: _passController,
-      validator: (value) {
-        if (value.isEmpty) return "Masukan Password";
-        if (value.length < 5 ) return "Password terlalu pendek";
-      },
-      obscureText: true,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
-        hintText: "Password",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
-    );
-    
-    final loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(30.0),
-      color: Color(colorButton),
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
-        // untuk validasi email dan password di sini
-        onPressed: () {
-          
-        },
-        child: Text(
-          "Login",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
     final forgotLabel = FlatButton(
       child: Text(
         'Forgot password?',
@@ -383,18 +362,16 @@ class LoginPageState extends State<LoginPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
+                new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                new Form(
+                  key: formKey,
+                  child: new Column(
+                    children: buildInputs() + loginButton(),
+                  ),
+                ),
                 SizedBox(
                   height: 45.0,
                 ),
-                emailField,
-                SizedBox(
-                  height: 10.0,
-                ),
-                passField,
-                SizedBox(
-                  height: 30.0,
-                ),
-                loginButton,
                 SizedBox(
                   height: 10.0,
                 ),
@@ -409,6 +386,68 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  List<Widget> buildInputs(){
+    return [
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new TextFormField(
+        controller: _emailController,
+        validator: (value) {
+          if (value.isEmpty) return "Masukan Email";
+          if (value.length < 5 ) return "Email terlalu pendek";
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          labelText: "Email",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+        onSaved: (value) => _email = value
+      ),
+
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new TextFormField(
+        controller: _passController,
+        validator: (value) {
+          if (value.isEmpty) return "Masukan Password";
+          if (value.length < 5 ) return "Password terlalu pendek";
+        },
+        obscureText: true,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
+          labelText: "Password",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+        onSaved: (value) => _pass = value,
+      ),
+    ];
+  }
+  List<Widget> loginButton(){
+    return [
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30.0),
+        color: Color(colorButton),
+        child: MaterialButton(
+          minWidth: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
+          onPressed: () {
+            validateandSubmit();
+          },
+                          
+          child: Text(
+            "Login",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+                          
+        ),
+      ),
+    ];
+  }
 }
 
 
@@ -518,3 +557,4 @@ class ProviderDetails {
   ProviderDetails(this.providerDetail);
   final String providerDetail;
 }
+
