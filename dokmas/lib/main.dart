@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'datadiri.dart';
@@ -132,6 +131,35 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  String _email;
+  String _pass;
+
+  final formKey = new GlobalKey<FormState>();
+
+  bool validateandSave(){
+    final form = formKey.currentState;
+    if(form.validate()) {
+      form.save();
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  void validateandSubmit() async{
+    if(validateandSave()){
+      try{
+        FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _pass);
+        print('masuk: ${user.uid}');
+
+      }
+      catch(e){
+        print('err: $e');
+      }
+    }
+  }
+
   // Validasi
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
@@ -155,15 +183,12 @@ class LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
     FirebaseUser userDetails = await _firebaseAuth.signInWithCredential(credential);
-    ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
 
-    List<ProviderDetails> providerData = new List<ProviderDetails>();
-    providerData.add(providerInfo);
-
-    UserDetails details = new UserDetails(userDetails.providerId, userDetails.displayName,
+    UserDetails details = new UserDetails(
+      userDetails.providerId, 
+      userDetails.displayName,
       userDetails.photoUrl,
-      userDetails.email,
-      providerData);
+      userDetails.email);
 
     Navigator.push(context, 
       MaterialPageRoute(
@@ -175,56 +200,6 @@ class LoginPageState extends State<LoginPage> {
 
   @override 
   Widget build(BuildContext context){
-    final emailField = TextFormField(
-      controller: _emailController,
-      validator: (value) {
-        if (value.isEmpty) return "Masukan Email";
-        if (value.length < 5 ) return "Email terlalu pendek";
-      },
-      obscureText: false,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        hintText: "Email",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
-    );
-
-    final passField = TextFormField(
-      controller: _passController,
-      validator: (value) {
-        if (value.isEmpty) return "Masukan Password";
-        if (value.length < 5 ) return "Password terlalu pendek";
-      },
-      obscureText: true,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
-        hintText: "Password",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
-    );
-    
-    final loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(30.0),
-      color: Color(colorButton),
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
-        // untuk validasi email dan password di sini
-        onPressed: () {
-          
-        },
-        child: Text(
-          "Login",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
     final forgotLabel = FlatButton(
       child: Text(
         'Forgot password?',
@@ -283,18 +258,16 @@ class LoginPageState extends State<LoginPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
+                new Padding(padding: new EdgeInsets.only(top: 20.0)),
+                new Form(
+                  key: formKey,
+                  child: new Column(
+                    children: buildInputs() + loginButton(),
+                  ),
+                ),
                 SizedBox(
                   height: 45.0,
                 ),
-                emailField,
-                SizedBox(
-                  height: 10.0,
-                ),
-                passField,
-                SizedBox(
-                  height: 30.0,
-                ),
-                loginButton,
                 SizedBox(
                   height: 10.0,
                 ),
@@ -309,6 +282,68 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  List<Widget> buildInputs(){
+    return [
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new TextFormField(
+        controller: _emailController,
+        validator: (value) {
+          if (value.isEmpty) return "Masukan Email";
+          if (value.length < 5 ) return "Email terlalu pendek";
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          labelText: "Email",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+        onSaved: (value) => _email = value
+      ),
+
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new TextFormField(
+        controller: _passController,
+        validator: (value) {
+          if (value.isEmpty) return "Masukan Password";
+          if (value.length < 5 ) return "Password terlalu pendek";
+        },
+        obscureText: true,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
+          labelText: "Password",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+        onSaved: (value) => _pass = value,
+      ),
+    ];
+  }
+  List<Widget> loginButton(){
+    return [
+      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      Material(
+        elevation: 5.0,
+        borderRadius: BorderRadius.circular(30.0),
+        color: Color(colorButton),
+        child: MaterialButton(
+          minWidth: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
+          onPressed: () {
+            validateandSubmit();
+          },
+                          
+          child: Text(
+            "Login",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+                          
+        ),
+      ),
+    ];
+  }
 }
 
 
@@ -318,7 +353,7 @@ class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
   // autentikasi disini
-  final UserDetails detailsUser;
+  UserDetails detailsUser;
   HomePage(this.detailsUser);
 
   static List items;
@@ -368,7 +403,7 @@ class HomePage extends StatelessWidget {
           onTap: () {
             Navigator.push(context, 
             MaterialPageRoute(
-            builder: (context) => DiriPage(),
+            builder: (context) => DiriPage(detailsUser)
       )
     );
           },
@@ -416,11 +451,7 @@ class UserDetails {
   final String userName;
   final String photoUrl;
   final String userEmail;
-  final List<ProviderDetails> providerData;
-  UserDetails(this.providerDetail,this.userName,this.photoUrl,this.userEmail,this.providerData);
+  UserDetails(this.providerDetail,this.userName,this.photoUrl,this.userEmail);
 }
 
-class ProviderDetails {
-  ProviderDetails(this.providerDetail);
-  final String providerDetail;
-}
+
