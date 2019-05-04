@@ -357,7 +357,7 @@ class HomePage extends StatelessWidget {
   HomePage(this.detailsUser);
 
   static List items;
-  String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
+  final String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
  
   void initState(){
 
@@ -402,10 +402,8 @@ class HomePage extends StatelessWidget {
           
           onTap: () {
             Navigator.push(context, 
-            MaterialPageRoute(
-            builder: (context) => DiriPage(detailsUser)
-      )
-    );
+            MaterialPageRoute( builder: (context) => DiriPage(detailsUser))
+            );
           },
         ),
         Divider(),
@@ -413,7 +411,9 @@ class HomePage extends StatelessWidget {
           title: Text('Keluar'),
           onTap: () {
             _googleSignOut();
-            Navigator.pushNamed(context, '/');
+            Navigator.of(context).push(
+              new MaterialPageRoute(builder: (BuildContext context) => LoginPage())
+            );
           },
         ),
        ],
