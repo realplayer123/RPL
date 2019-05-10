@@ -7,7 +7,7 @@ enum JenisKelamin { laki, perempuan }
 class IsiDiriPage extends StatefulWidget {
   IsiDiriPage(this.detailsUser);
   final UserDetails detailsUser;
-  
+
   @override
   IsiDiriPageState createState() => IsiDiriPageState();
 }
@@ -15,24 +15,25 @@ class IsiDiriPage extends StatefulWidget {
 class IsiDiriPageState extends State<IsiDiriPage> {
   String nama = '';
   String ktp = '';
-  
+
   void _editData() {
-    Firestore.instance.runTransaction((Transaction transaction) async {
-      CollectionReference reference = Firestore.instance.collection("datadiri");
-      await reference.add({
-        "email" : widget.detailsUser.userEmail,
-        "nama" : nama,
-        "noktp" : ktp,
-        "jk" : _jk,
-        "agama" : agamaVal,
-        "ttl" : _lahir,
-      });
+    final CollectionReference ref = Firestore.instance.collection('datadiri');
+    Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
+        await tx.set(documentReference, <String, dynamic> {
+          'email' : widget.detailsUser.userEmail,
+          'nama' : nama,
+          'ktp' : ktp,
+          'jk' : jk,
+          'agama' : agamaVal,
+          'lahir' : _lahirTeks,
+        });
     });
-    Navigator.pop(context);
   }
 
   DateTime _lahir = new DateTime.now();
   String _lahirTeks = '';
+
   Future<Null> _pilihLahir(BuildContext context) async {
     final pilih = await showDatePicker(
       context: context,
@@ -51,6 +52,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
 
   String agamaVal = 'Islam';
   JenisKelamin _jk = JenisKelamin.laki;
+  String jk = 'Laki-laki';
 
   @override
   void initState() {
@@ -72,6 +74,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                 Text("Nama :"),
                 Expanded(
                   child: TextField(
+                    maxLength: 40,
                     onChanged: (String str) {
                       setState(() {
                         nama = str;
@@ -89,6 +92,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                 Text("No KTP :"),
                 Expanded(
                   child: TextField(
+                    maxLength: 20,
                     onChanged: (String str) {
                       setState(() {
                         ktp = str;
@@ -128,6 +132,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                     groupValue: _jk,
                     onChanged: (JenisKelamin value) {
                       setState(() {
+                        jk = 'Laki-laki';
                         _jk = value;
                       });
                     },
@@ -138,6 +143,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                     groupValue: _jk,
                     onChanged: (JenisKelamin value) {
                       setState(() {
+                        jk = 'Perempuan';
                         _jk = value;
                       });
                     },
@@ -177,11 +183,12 @@ class IsiDiriPageState extends State<IsiDiriPage> {
             ),
           ),
           Center(
-              child: Padding(
+            child: Padding(
             padding: EdgeInsets.only(top: 16.0, left: 32.0, right: 32.0),
             child: RaisedButton(
               onPressed: () {
                 _editData();
+                Navigator.pop(context);
               },
               child: Text("Edit"),
             ),

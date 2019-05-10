@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'datadiri.dart';
+import 'dok.dart';
 
 
 void main() => runApp(MyApp());
@@ -27,8 +28,9 @@ class SignUpPage extends StatefulWidget{
 
 class _SignUpState extends State<SignUpPage>{
 
-  TextEditingController controllerPass= new TextEditingController();
-  TextEditingController controllerEmail= new TextEditingController();
+  TextEditingController controllerPass = new TextEditingController();
+  TextEditingController controllerPassCek = new TextEditingController();
+  TextEditingController controllerEmail = new TextEditingController();
 
 AlertDialog submit(){
   AlertDialog alertDialog =new AlertDialog(
@@ -51,69 +53,92 @@ AlertDialog submit(){
     return new Scaffold(
       appBar: new AppBar(
         //leading: new Icon(Icons, list) buat icon
-        title: new Text("Daftar"),
+        title: new Text("Daftar Akun Baru"),
         backgroundColor: Colors.indigo,
       ),
-      
-      body: new ListView(
-        children: <Widget>[
-          new Container(
-            padding: new EdgeInsets.all(10),
-              child: new ListView(
-                children: <Widget>[
-                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
-
-                  new TextField(
-                    controller: controllerEmail,
-                    decoration: new InputDecoration(
-                      hintText: "Email",
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(32.0)
-                      )
-                    ),
-                  ),
-                  
-                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
-
-                  new Padding(padding: new EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0)),
-                  new TextField(
-                    controller: controllerPass,
-                    obscureText: true,
-                    decoration: new InputDecoration(
-                      hintText: "Kata Sandi",
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(32.0)
-                      )
-                    ),
-                  ),
-
-                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
-                  new TextField(
-                    obscureText: true,
-                    decoration: new InputDecoration(
-                      hintText: "Ulangi Kata Sandi",
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(32.0)
-                      )
-                    ),
-                  ),
-
-
-                  new Padding(padding: new EdgeInsets.only(top: 20.0)),
-
-                  new RaisedButton(
-                    child: new Text("DAFTAR"),
-                    color: Colors.green,
-                    onPressed: (){
-                      submit();
-                    },
-                  )
-                ],
+      body: Builder(
+          builder : (BuildContext cont) => ListView(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top : 32.0, bottom: 8.0),
+              child: Center(
+                child: Text("Masukan Email"),
               ),
-          )
-        ],
-      )
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+              child: TextField(
+                controller: controllerEmail,
+                decoration: InputDecoration(
+                  hintText: "Email",
+                  contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32.0)
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(top : 32.0, bottom: 8.0),
+              child: Center(
+                child: Text("Masukan Password"),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+              child: TextField(
+                obscureText: true,
+                controller: controllerPass,
+                decoration: InputDecoration(
+                  hintText: "Kata Sandi",
+                  contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32.0)
+                  ),
+                ),
+              ),
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.only(top : 8.0, left: 32.0, right: 32.0),
+              child: TextField(
+                obscureText: true,
+                controller: controllerPassCek,
+                decoration: InputDecoration(
+                  hintText: "Ulangi Kata Sandi",
+                  contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32.0)
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top : 32.0, left: 32.0, right: 32.0),
+              child: RaisedButton(
+                child: Text("Daftar", style: TextStyle(color: Colors.white),),
+                color: Colors.blueAccent,
+                onPressed: (){
+                  if(controllerPass.text != controllerPassCek.text) {
+                    
+                    Scaffold.of(cont).showSnackBar(
+                      new SnackBar(content: Text("Kata Sandi Salah !"),)
+                    );
+                  }
+                },
+                shape: OutlineInputBorder(
+                  borderSide: BorderSide(style: BorderStyle.none),
+                  borderRadius: BorderRadius.circular(32.0)
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+    
   }
 }
 
@@ -285,6 +310,10 @@ class LoginPageState extends State<LoginPage> {
   List<Widget> buildInputs(){
     return [
       new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new Center(
+        child: Text("Masukan Email"),
+      ),
+      new Padding(padding: new EdgeInsets.only(top: 4.0)),
       new TextFormField(
         controller: _emailController,
         validator: (value) {
@@ -293,13 +322,17 @@ class LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          labelText: "Email",
+          hintText: "Email",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
         ),
         onSaved: (value) => _email = value
       ),
 
-      new Padding(padding: new EdgeInsets.only(top: 20.0)),
+      new Padding(padding: new EdgeInsets.only(top: 10.0)),
+      new Center(
+        child: Text("Masukan Kata Sandi"),
+      ),
+      new Padding(padding: new EdgeInsets.only(top: 4.0)),
       new TextFormField(
         controller: _passController,
         validator: (value) {
@@ -309,7 +342,7 @@ class LoginPageState extends State<LoginPage> {
         obscureText: true,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(_ver, _hor, _ver, _hor),
-          labelText: "Password",
+          hintText: "Kata Sandi",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
         ),
         onSaved: (value) => _pass = value,
@@ -385,18 +418,9 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               decoration: new BoxDecoration(
-                image: new DecorationImage(
-                  image: new NetworkImage("https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
-                  fit: BoxFit.fill
-                )
+                color: Colors.blue,
               ),
             ),
-        ListTile(
-          title: Text('Dokumen baru'),
-          onTap: () {
-            
-          },
-        ),
         ListTile(
           title: Text('Data Diri'),
           
@@ -424,24 +448,7 @@ class HomePage extends StatelessWidget {
         title: Text("Beranda"),
       ),
       drawer: mainDrawer,
-      body: GridView.count(
-          // Create a grid with 3 columns. If you change the scrollDirection to
-          // horizontal, this would produce 2 rows (if the rows exceed the screen).
-          crossAxisCount: 3,
-          // Generate 100 Widgets that display their index in the List
-          children: List.generate(9, (index) {
-            return Container(
-              margin: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(color: Colors.teal),
-              child: Center(
-                child: Text(
-                  'Item $index',
-                  style: Theme.of(context).textTheme.headline,
-                ),
-              ),
-            );
-          }),
-      ),
+      body: new DokPage(detailsUser),
     ); 
   }
 }
