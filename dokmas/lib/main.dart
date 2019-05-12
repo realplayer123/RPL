@@ -236,7 +236,9 @@ class LoginPageState extends State<LoginPage> {
       return true;
     }
     else{
-      return false;
+      setState((){
+        _autoValidate = true;
+      });
     }
   }
 
@@ -268,6 +270,8 @@ class LoginPageState extends State<LoginPage> {
       }
     }
   }
+
+  bool _autoValidate = false;
 
   // Validasi
   final _emailController = TextEditingController();
@@ -368,6 +372,7 @@ class LoginPageState extends State<LoginPage> {
                 new Padding(padding: new EdgeInsets.only(top: 20.0)),
                 new Form(
                   key: formKey,
+                  autovalidate: _autoValidate,
                   child: new Column(
                     children: buildInputs() + loginButton(),
                   ),
@@ -395,10 +400,8 @@ class LoginPageState extends State<LoginPage> {
       new Padding(padding: new EdgeInsets.only(top: 4.0)),
       new TextFormField(
         controller: _emailController,
-        validator: (value) {
-          if (value.isEmpty) return "Masukan Email";
-          if (value.length < 5 ) return "Email terlalu pendek";
-        },
+        keyboardType: TextInputType.emailAddress,
+        validator: validateEmail,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Email",
@@ -416,7 +419,7 @@ class LoginPageState extends State<LoginPage> {
         controller: _passController,
         validator: (value) {
           if (value.isEmpty) return "Masukan Password";
-          if (value.length < 5 ) return "Password terlalu pendek";
+          if (value.length < 8 ) return "Password terlalu pendek";
         },
         obscureText: true,
         decoration: InputDecoration(
@@ -455,6 +458,15 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     ];
+  }
+  String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Enter Valid Email';
+    else
+      return null;
   }
 }
 
