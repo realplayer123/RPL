@@ -30,8 +30,8 @@ class _DokPageState extends State<DokPage> {
             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
               if(!snapshot.hasData){
                 return new Container(child: Padding(
-                  padding: EdgeInsets.only(top : 200.0),
-                  child: CircularProgressIndicator(),
+                  padding: EdgeInsets.only(top : 100.0),
+                  child: Center(child: CircularProgressIndicator()),
                   ),
                 );
               }

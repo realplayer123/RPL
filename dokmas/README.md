@@ -1,17 +1,16 @@
-# Dokmas (Dokumen Masyarakat)
+# dokmas
 
-Dokumenmu dalam genggamanmu.
+A new Flutter project.
 
-## Functions and Additional \[For Authenticated Users Only\].
+## Getting Started
 
-Functions:
+This project is a starting point for a Flutter application.
 
-1. Saving the documents owned and inputted by user.
-2. Users can retrieve their documents (detail and photo) and use it everytime they need it.
-3. Users can delete their obsolote documents by their own.
+A few resources to get you started if this is your first Flutter project:
 
-Additional:
+- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
 
-- The chance of losing data can be lower with this app, because the storage is cloud-based.
-- Every documents can only viewed and edited by its owner.
-- Plus, they can add their specific identity in "profile" and also can change their profile photo. They can also access and edit their profile everytime.
+For help getting started with Flutter, view our 
+[online documentation](https://flutter.io/docs), which offers tutorials, 
+samples, guidance on mobile development, and a full API reference.

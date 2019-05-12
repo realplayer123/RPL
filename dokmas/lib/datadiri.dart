@@ -25,8 +25,9 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: 100,
+                padding: EdgeInsets.only(top: 100),
                 height: 100,
+                width: 100,
                 decoration: new BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
@@ -41,7 +42,7 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 100.0),
+                padding: EdgeInsets.only(top: 120.0),
                 child: Text(
                   widget.detailsUser.userName, 
                   style: TextStyle(
@@ -55,7 +56,7 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 120.0),
+                padding: EdgeInsets.only(top: 140.0),
                 child: Text(
                   widget.detailsUser.userEmail, 
                   style: TextStyle(
@@ -66,7 +67,7 @@ class DiriPageState extends State<DiriPage> {
             ],
           ),
           StreamBuilder(
-            stream: Firestore.instance.collection('datadiri').where("email",isEqualTo : widget.detailsUser.userEmail ).snapshots(),
+            stream: Firestore.instance.collection('pengguna').where("email",isEqualTo : widget.detailsUser.userEmail ).snapshots(),
             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
               if(!snapshot.hasData){
                 return new Container(child: Padding(

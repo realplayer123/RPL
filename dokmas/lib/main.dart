@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'datadiri.dart';
 import 'dok.dart';
@@ -31,6 +32,38 @@ class _SignUpState extends State<SignUpPage>{
   TextEditingController controllerPass = new TextEditingController();
   TextEditingController controllerPassCek = new TextEditingController();
   TextEditingController controllerEmail = new TextEditingController();
+  TextEditingController controllerUsername = new TextEditingController();
+
+  void _daftarBaru() async {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: controllerEmail.text,
+      password: controllerPass.text,
+    );
+
+    Firestore.instance.runTransaction((Transaction tx) async {
+      DocumentReference documentReference = Firestore.instance
+                                                     .collection('pengguna')
+                                                     .document(controllerEmail.text);
+      await tx.set(documentReference, <String, dynamic>{
+        "email" : controllerEmail.text,
+        "username" : controllerUsername.text,
+      });
+    });
+
+    // pindah ke HomePage
+    UserDetails userbaru = new UserDetails(
+      controllerUsername.text, 
+      "images/user.png", 
+      controllerEmail.text
+    );
+    
+
+    Navigator.push(context, 
+      MaterialPageRoute(
+        builder : (BuildContext context) => HomePage(userbaru)
+      )
+    );
+  }
 
 AlertDialog submit(){
   AlertDialog alertDialog =new AlertDialog(
@@ -80,6 +113,26 @@ AlertDialog submit(){
             ),
 
             Padding(
+              padding: const EdgeInsets.only(top : 10.0, bottom: 8.0),
+              child: Center(
+                child: Text("Masukan Username"),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+              child: TextField(
+                controller: controllerUsername,
+                decoration: InputDecoration(
+                  hintText: "Username",
+                  contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32.0)
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
               padding: const EdgeInsets.only(top : 32.0, bottom: 8.0),
               child: Center(
                 child: Text("Masukan Password"),
@@ -116,16 +169,26 @@ AlertDialog submit(){
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top : 32.0, left: 32.0, right: 32.0),
+              padding: const EdgeInsets.only(top : 0.0, left: 32.0, right: 32.0),
               child: RaisedButton(
                 child: Text("Daftar", style: TextStyle(color: Colors.white),),
                 color: Colors.blueAccent,
                 onPressed: (){
-                  if(controllerPass.text != controllerPassCek.text) {
-                    
+                  if( controllerEmail.text == '' || controllerPass.text == '' || controllerPassCek.text == '' || controllerUsername.text == '') {
+                    Scaffold.of(cont).showSnackBar(
+                      new SnackBar(content: Text("Form tidak boleh ada yang kosong"),)
+                    );
+                  } else if(controllerPass.text != controllerPassCek.text) {
                     Scaffold.of(cont).showSnackBar(
                       new SnackBar(content: Text("Kata Sandi Salah !"),)
                     );
+                  } else if(controllerPass.text.length < 6) {
+                    Scaffold.of(cont).showSnackBar(
+                      new SnackBar(content: Text("Panjang password minimal 6 karakter !"),)
+                    );
+                  }
+                  else {
+                    _daftarBaru();
                   }
                 },
                 shape: OutlineInputBorder(
@@ -158,8 +221,13 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   String _email;
   String _pass;
-
+  String _usernames;
   final formKey = new GlobalKey<FormState>();
+  @override 
+  void initState() {
+    super.initState();
+    _usernames = 'Unknown';
+  }
 
   bool validateandSave(){
     final form = formKey.currentState;
@@ -177,6 +245,22 @@ class LoginPageState extends State<LoginPage> {
       try{
         FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _pass);
         print('masuk: ${user.uid}');
+
+        // cek username akun
+        DocumentReference dokref = Firestore.instance.collection('pengguna').document(_email);
+        Firestore.instance.runTransaction((Transaction tx) async {
+          await tx.get(dokref).then((DocumentSnapshot snaps){
+            _usernames = snaps.data['username'];
+          });
+          print('Ini isi username yang ditangkap : $_usernames');
+          
+          
+          UserDetails userLogin = new UserDetails(_usernames, "images/user.png", _email);
+          // Navigasi ke Home
+          Navigator.push(context, 
+            MaterialPageRoute(builder: (BuildContext context)=> HomePage(userLogin))
+          );
+        });
 
       }
       catch(e){
@@ -209,8 +293,7 @@ class LoginPageState extends State<LoginPage> {
     );
     FirebaseUser userDetails = await _firebaseAuth.signInWithCredential(credential);
 
-    UserDetails details = new UserDetails(
-      userDetails.providerId, 
+    UserDetails details = new UserDetails( 
       userDetails.displayName,
       userDetails.photoUrl,
       userDetails.email);
@@ -223,11 +306,10 @@ class LoginPageState extends State<LoginPage> {
     return userDetails;
   }
 
-  @override 
   Widget build(BuildContext context){
     final forgotLabel = FlatButton(
       child: Text(
-        'Forgot password?',
+        'Lupa password?',
         style: TextStyle(color: Colors.black54),
       ),
       onPressed: () {},
@@ -277,7 +359,7 @@ class LoginPageState extends State<LoginPage> {
             child: ListView(
               children: <Widget>[
                 SizedBox(
-                  height: 155.0,
+                  height: 150.0,
                   child: Image.asset(
                     "images/logo.png", 
                     fit: BoxFit.contain,
@@ -290,15 +372,12 @@ class LoginPageState extends State<LoginPage> {
                     children: buildInputs() + loginButton(),
                   ),
                 ),
+                daftar,
+                forgotLabel,
                 SizedBox(
-                  height: 45.0,
-                ),
-                SizedBox(
-                  height: 10.0,
+                  height: 80.0,
                 ),
                 googleButton,
-                forgotLabel,
-                daftar
               ],
             ),
           ),
@@ -389,7 +468,6 @@ class HomePage extends StatelessWidget {
   UserDetails detailsUser;
   HomePage(this.detailsUser);
 
-  static List items;
   final String currentProfilePic = "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
  
   void initState(){
@@ -454,11 +532,10 @@ class HomePage extends StatelessWidget {
 }
 
 class UserDetails {
-  final String providerDetail;
   final String userName;
   final String photoUrl;
   final String userEmail;
-  UserDetails(this.providerDetail,this.userName,this.photoUrl,this.userEmail);
+  UserDetails(this.userName,this.photoUrl,this.userEmail);
 }
 
 
