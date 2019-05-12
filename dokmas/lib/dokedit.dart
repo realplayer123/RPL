@@ -36,22 +36,34 @@ class _EditDataState extends State<EditData>{
       setState(() {
         _image = image;
         print('Image Path $_image');
+        print('ganti gambar : $gantiGambar');
       });
     }
   }
 
   Future uploadPic() async{
+    
     String fileName = basename(_image.path);
     StorageReference firebaseStoragRef = FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = firebaseStoragRef.putFile(_image);
     var downUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     url = downUrl.toString();
+    print('Upload gambar berlangsung...');
+    Firestore.instance.runTransaction((Transaction transaction) async{
+      DocumentSnapshot snapshot =
+      await transaction.get(widget.index);
+      await transaction.update(snapshot.reference,{
+        "gambar": url,
+      });
+      print("url yang di upload itu ini $url");
+    });
   }
 
 void _edit(){
-  
+  print('di sini ganti gambar : $gantiGambar');
   if(gantiGambar) {
-    
+    print('Mencoba upload gambar...');
+    uploadPic();
   }
 
   Firestore.instance.runTransaction((Transaction transaction) async{
@@ -61,9 +73,7 @@ void _edit(){
       "jenis": jenis,
       "deskripsi": desk,
       "nomor" : no,
-      "gambar": url,
     });
-    print("url yang di upload itu ini $url");
   });
 }
 
@@ -85,7 +95,7 @@ void initState(){
     return new Scaffold(
       appBar: new AppBar(
         //leading: new Icon(Icons, list) buat icon
-        title: new Text("Edit Document"),
+        title: new Text("Lihat Dokumen"),
         backgroundColor: Colors.indigo,
       ),
       body: new ListView(
@@ -173,7 +183,7 @@ void initState(){
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
                   
                   new RaisedButton(
-                    child: new Text("Ganti"),
+                    child: new Text("Ubah Dokumen"),
                     onPressed: (){
                       _edit();
                       Navigator.pop(context);

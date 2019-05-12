@@ -67,7 +67,7 @@ class DiriPageState extends State<DiriPage> {
             ],
           ),
           StreamBuilder(
-            stream: Firestore.instance.collection('pengguna').where("email",isEqualTo : widget.detailsUser.userEmail ).snapshots(),
+            stream: Firestore.instance.collection('datadiri').where("email",isEqualTo : widget.detailsUser.userEmail ).snapshots(),
             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
               if(!snapshot.hasData){
                 return new Container(child: Padding(
