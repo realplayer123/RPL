@@ -2,9 +2,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'main.dart';
 import 'isidatadiri.dart';
 class DiriPage extends StatefulWidget {
@@ -31,7 +28,7 @@ class DiriPageState extends State<DiriPage> {
     final profpic = Hero(
       tag: 'hero',
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(top: 16.0),
         child: CircleAvatar(
           radius: 72.0,
           backgroundColor: Colors.transparent,
@@ -52,7 +49,7 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 100),
+                padding: EdgeInsets.only(top: 10),
                 child: profpic,
               ),
             ],
@@ -61,7 +58,7 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 120.0),
+                padding: EdgeInsets.only(top: 180.0),
                 child: Text(
                   widget.detailsUser.userName, 
                   style: TextStyle(
@@ -76,7 +73,7 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 150.0),
+                padding: EdgeInsets.only(top: 210.0),
                 child: Text(
                   widget.detailsUser.userEmail, 
                   style: TextStyle(
@@ -92,7 +89,7 @@ class DiriPageState extends State<DiriPage> {
             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
               if(!snapshot.hasData){
                 return new Container(child: Padding(
-                  padding: EdgeInsets.only(top : 200.0),
+                  padding: EdgeInsets.only(top : 220.0),
                   child: Center(child: CircularProgressIndicator()),
                   ),
                 );
@@ -101,10 +98,10 @@ class DiriPageState extends State<DiriPage> {
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 240.0),
+            padding: const EdgeInsets.only(top: 400.0),
             child: Center(
               child: RaisedButton(
-                child: Text("UBAH KATA SANDI"),
+                child: Text("Ubah Kata Sandi"),
                 onPressed: () {
                   Navigator.push(context, 
                   MaterialPageRoute( builder: (context) => LupaPage()),
@@ -114,7 +111,7 @@ class DiriPageState extends State<DiriPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 350.0),
+            padding: const EdgeInsets.only(top: 500.0),
             child: Center(
               child: RaisedButton(
                 child: Text("Set Data Diri"),
@@ -148,7 +145,7 @@ class KeteranganDiri extends StatelessWidget {
         String lahir = document[i].data['lahir'].toString();
         
         return Padding(
-          padding: const EdgeInsets.only(top : 200.0),
+          padding: const EdgeInsets.only(top : 260.0),
           child: Row(
             mainAxisAlignment:MainAxisAlignment.spaceBetween,
             children: <Widget>[

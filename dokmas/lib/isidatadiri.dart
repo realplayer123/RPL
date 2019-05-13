@@ -27,27 +27,17 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   String jk = 'Laki-laki';
   final formkey = new GlobalKey<FormState>();
 
-  List<String> listagama =<String>[
-    'Islam',
-    'Kristen',
-    'Katolik',
-    'Hindu',
-    'Budha',
-    'Konghucu'
-  ];
-
   File image;
-  
+
   final String baseProfilePic =
       "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
 
   var url;
 
-  bool gantiGambar= false;
+  bool gantiGambar = false;
 
   String validateDigit(String value) {
-    Pattern pattern =
-        r'^-?[0-9]+$';
+    Pattern pattern = r'^-?[0-9]+$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value))
       return 'Data harus berupa bilangan';
@@ -56,8 +46,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   }
 
   String validateAlpha(String value) {
-    Pattern pattern =
-        r'^[a-zA-Z ]+$';
+    Pattern pattern = r'^[a-zA-Z ]+$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value))
       return 'Data harus berupa huruf';
@@ -82,19 +71,19 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   }
 
   void _cariData() {
-      final CollectionReference ref = Firestore.instance.collection('datadiri');
-      Firestore.instance.runTransaction((Transaction tx) async {
-        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
-        await tx.get(documentReference).then(
-          (DocumentSnapshot snaps){
-            nama.text = snaps.data['nama'];
-            ktp.text = snaps.data['ktp'];
-            agamaVal = snaps.data['agama'];
-            print(snaps.data['jk']);
-            print(snaps.data['agama']);
-            print(snaps.data['lahir']);
-          }
-        );
+    final CollectionReference ref = Firestore.instance.collection('datadiri');
+    Firestore.instance.runTransaction((Transaction tx) async {
+      DocumentReference documentReference =
+          ref.document(widget.detailsUser.userEmail);
+      await tx.get(documentReference).then((DocumentSnapshot snaps) {
+        nama.text = snaps.data['nama'];
+        ktp.text = snaps.data['ktp'];
+        agamaVal = snaps.data['agama'];
+        print(snaps.data['jk']);
+        print(snaps.data['agama']);
+        print(snaps.data['lahir']);
+        print('nilai agama : $agamaVal');
+      });
     });
   }
 
@@ -107,10 +96,10 @@ class IsiDiriPageState extends State<IsiDiriPage> {
 
   bool validasi() {
     final formnya = formkey.currentState;
-    if(formnya.validate()){
+    if (formnya.validate()) {
       formnya.save();
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -123,103 +112,110 @@ class IsiDiriPageState extends State<IsiDiriPage> {
         child: CircleAvatar(
           radius: 72.0,
           backgroundColor: Colors.transparent,
-          backgroundImage: (image != null) ? Image.file(image,fit:BoxFit.fill):
-              ((NetworkImage(widget.detailsUser.photoUrl) != null)
-              ?(NetworkImage(widget.detailsUser.photoUrl))
-              :NetworkImage(baseProfilePic)),
+          backgroundImage: (image != null)
+              ? Image.file(image, fit: BoxFit.fill)
+              : ((NetworkImage(widget.detailsUser.photoUrl) != null)
+                  ? (NetworkImage(widget.detailsUser.photoUrl))
+                  : NetworkImage(baseProfilePic)),
         ),
       ),
     );
 
-    Future getImage() async{
+    Future getImage() async {
       var _img = await ImagePicker.pickImage(source: ImageSource.gallery);
 
       setState(() {
-       image = _img; 
-       print('Image path $image');
+        image = _img;
+        print('Image path $image');
       });
     }
 
-    Future uploadPic(BuildContext context) async{
+    Future uploadPic(BuildContext context) async {
       String fileNama = basename(image.path);
-      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileNama);
+      StorageReference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child(fileNama);
       StorageUploadTask uploadTask = firebaseStorageRef.putFile(image);
       var downUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
       url = downUrl.toString();
       setState(() {
-       print('Foto Profil Diubah');
-       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Foto Profil Diubah'),)); 
+        print('Foto Profil Diubah');
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text('Foto Profil Diubah'),
+        ));
       });
     }
 
     void _editData() {
-    if(gantiGambar) {
-      print('Mencoba upload gambar...');
-      uploadPic(context);
-    }
-    final CollectionReference ref = Firestore.instance.collection('datadiri');
-    Firestore.instance.runTransaction((Transaction tx) async {
-        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
-        await tx.set(documentReference, <String, dynamic> {
-          'email' : widget.detailsUser.userEmail,
-          'nama' : nama.text,
-          'ktp' : ktp.text,
-          'jk' : jk,
-          'agama' : agamaVal,
-          'lahir' : _lahirTeks,
-          'gambar' : url,
+      if (gantiGambar) {
+        print('Mencoba upload gambar...');
+        uploadPic(context);
+      }
+      final CollectionReference ref = Firestore.instance.collection('datadiri');
+      Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentReference documentReference =
+            ref.document(widget.detailsUser.userEmail);
+        await tx.set(documentReference, <String, dynamic>{
+          'email': widget.detailsUser.userEmail,
+          'nama': nama.text,
+          'ktp': ktp.text,
+          'jk': jk,
+          'agama': agamaVal,
+          'lahir': _lahirTeks,
+          'gambar': url,
         });
-    });
-  }
+      });
+    }
 
     List<Widget> inputForm() {
       return [
         Padding(
-            padding: const EdgeInsets.only(top: 32.0, left: 32.0, right: 32.0),
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom :24.0, right: 8.0),
-                  child: Text("Nama"),
+          padding: const EdgeInsets.only(top: 32.0, left: 32.0, right: 32.0),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0, right: 8.0),
+                child: Text("Nama"),
+              ),
+              Expanded(
+                child: TextFormField(
+                  validator: validateAlpha,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
+                  maxLength: 32,
+                  controller: nama,
                 ),
-                Expanded(
-                  child: TextFormField(
-                    validator: validateAlpha,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
-                    ),
-                    maxLength: 32,
-                    controller: nama,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 32.0, right: 32.0),
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom :24.0, right: 8.0),
-                  child: Text("No KTP"),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 32.0, right: 32.0),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0, right: 8.0),
+                child: Text("No KTP"),
+              ),
+              Expanded(
+                child: TextFormField(
+                  validator: validateDigit,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
+                  maxLength: 20,
+                  controller: ktp,
                 ),
-                Expanded(
-                  child: TextFormField(
-                    validator: validateDigit,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
-                    ),
-                    maxLength: 20,
-                    controller: ktp,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
+        ),
       ];
-    } 
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -228,7 +224,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
       body: ListView(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top : 20.0, left: 20.0, right: 20.0),
+            padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
             child: Text(
               "Perhatikan setiap data yang akan di set untuk ditampilkan sebagai informasi.",
               style: TextStyle(
@@ -245,17 +241,16 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                 child: profpic,
               ),
               Padding(
-                padding: EdgeInsets.only(top: 160),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.camera,
-                    size: 30.0,
-                  ),
-                  onPressed: (){
-                    getImage();
-                  },
-                )
-              ),
+                  padding: EdgeInsets.only(top: 160),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.camera,
+                      size: 30.0,
+                    ),
+                    onPressed: () {
+                      getImage();
+                    },
+                  )),
             ],
           ),
           Form(
@@ -319,33 +314,30 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                 Padding(
                   padding: EdgeInsets.only(right: 16.0),
                 ),
-                StreamBuilder<QuerySnapshot>{
-                  stream: Firestore.instance.collection("user")
-                }
-                DropdownButton(
-                  items: listagama.map((value)=>DropdownMenuItem(
-                    child: Text(
-                      value,
-                    ),
-                    value: value,  
-                  )).toList(),
-                  onChanged: (selectedAgama){
+                DropdownButton<String>(
+                  value: agamaVal,
+                  onChanged: (String newValue) {
                     setState(() {
-                      agamaVal = selectedAgama;
+                      agamaVal = newValue;
                     });
                   },
-                  value: agamaVal,
-                  hint: Text("Apa agama Anda?"),
+                  items: <String>['Islam', 'Kristen', 'Katolik' , 'Hindu', 'Budha', 'Konghucu']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
           ),
           Center(
-            child: Padding(
+              child: Padding(
             padding: EdgeInsets.only(top: 16.0, left: 32.0, right: 32.0),
             child: RaisedButton(
               onPressed: () {
-                if(validasi()){
+                if (validasi()) {
                   _editData();
                   Navigator.pop(context);
                 }

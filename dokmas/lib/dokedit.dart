@@ -88,7 +88,6 @@ void initState(){
   controllerNomor = new TextEditingController(text: widget.nomor);
   no = widget.nomor;
   url = widget.gambar;
-  
 }
 
   @override
@@ -107,22 +106,41 @@ void initState(){
                 children: <Widget>[
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
                   new Container(
-                        padding: EdgeInsets.only(top: 10.0, right: 32.0, left: 32.0),
-                        child: Center(
-                          child: FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: new Hero(
-                              child: _image == null ? new Image.network(url,) : new Image.file(_image),
-                              tag: 'Foto Profil',
-                            ),
-                          ),
+                        width: double.infinity,
+                        child: PhotoHero(
+                          photo: _image,
+                          width: 100,
+                          url: url,
+                          onTap: (){
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context){
+                                  return Scaffold(
+                                    body: Container(
+                                      color: Colors.white,
+                                      child: Center(
+                                        child: PhotoHero(
+                                          photo: _image,
+                                          width: double.infinity,
+                                          url: url,
+                                          onTap: (){
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              )
+                            );
+                          },
                         ),
                       ),
                   new Row(
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Jenis Dokumen: ", style:  new TextStyle(fontSize: 20.0, color: Colors.black87)),
+                        child: Text("Jenis Dokumen :", style:  new TextStyle(fontSize: 20.0, color: Colors.black87)),
                       ),
                       new SizedBox(width: 20.0,),
                       Padding(
@@ -203,6 +221,31 @@ void initState(){
             tooltip: 'Pick Image',
             child: new Icon(Icons.camera),
       )
+    );
+  }
+}
+
+class PhotoHero extends StatelessWidget {
+  const PhotoHero({ Key key, this.photo, this.onTap, this.width, this.url }) : super(key: key);
+
+  final File photo;
+  final VoidCallback onTap;
+  final double width;
+  final String url;
+
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: Hero(
+        tag: "dokumen",
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: photo == null ? Image.network(url) : Image.file(photo),
+          ),
+        ),
+      ),
     );
   }
 }
