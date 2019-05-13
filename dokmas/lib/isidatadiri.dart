@@ -22,10 +22,19 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   TextEditingController ktp = new TextEditingController();
   DateTime _lahir = new DateTime.now();
   String _lahirTeks = '';
-  String agamaVal = 'Islam';
+  String agamaVal;
   JenisKelamin _jk = JenisKelamin.laki;
   String jk = 'Laki-laki';
   final formkey = new GlobalKey<FormState>();
+
+  List<String> listagama =<String>[
+    'Islam',
+    'Kristen',
+    'Katolik',
+    'Hindu',
+    'Budha',
+    'Konghucu'
+  ];
 
   File image;
   
@@ -35,7 +44,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   var url;
 
   bool gantiGambar= false;
-  
+
   String validateDigit(String value) {
     Pattern pattern =
         r'^-?[0-9]+$';
@@ -80,6 +89,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
           (DocumentSnapshot snaps){
             nama.text = snaps.data['nama'];
             ktp.text = snaps.data['ktp'];
+            agamaVal = snaps.data['agama'];
             print(snaps.data['jk']);
             print(snaps.data['agama']);
             print(snaps.data['lahir']);
@@ -157,6 +167,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
           'jk' : jk,
           'agama' : agamaVal,
           'lahir' : _lahirTeks,
+          'gambar' : url,
         });
     });
   }
@@ -308,26 +319,23 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                 Padding(
                   padding: EdgeInsets.only(right: 16.0),
                 ),
+                StreamBuilder<QuerySnapshot>{
+                  stream: Firestore.instance.collection("user")
+                }
                 DropdownButton(
-                  value: agamaVal,
-                  onChanged: (String agamaValBaru) {
+                  items: listagama.map((value)=>DropdownMenuItem(
+                    child: Text(
+                      value,
+                    ),
+                    value: value,  
+                  )).toList(),
+                  onChanged: (selectedAgama){
                     setState(() {
-                      agamaVal = agamaValBaru;
+                      agamaVal = selectedAgama;
                     });
                   },
-                  items: <String>[
-                    'Islam',
-                    'Kristen',
-                    'Katolik',
-                    'Hindu',
-                    'Budha',
-                    'Konghucu'
-                  ].map<DropdownMenuItem<String>>((String val) {
-                    return DropdownMenuItem<String>(
-                      child: Text(val),
-                      value: val,
-                    );
-                  }).toList(),
+                  value: agamaVal,
+                  hint: Text("Apa agama Anda?"),
                 ),
               ],
             ),
