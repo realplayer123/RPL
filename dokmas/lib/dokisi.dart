@@ -99,12 +99,12 @@ class _DokisiPageState extends State<DokisiPage> {
                       "Tidak Ada Gambar",
                       style: TextStyle(fontSize: 18),
                     )
-                  : new FittedBox(
+                  : new Hero(
+                      tag: 'scan',
                       child: new Image.file(
                         _image,
-                        fit: BoxFit.fitWidth,
+                        fit: BoxFit.cover,
                       ),
-                      fit: BoxFit.fitWidth,
                     ),
             ),
           ),

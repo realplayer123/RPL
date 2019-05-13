@@ -73,6 +73,7 @@ void _edit(){
       "jenis": jenis,
       "deskripsi": desk,
       "nomor" : no,
+      "scan": url,
     });
   });
 }
@@ -110,7 +111,10 @@ void initState(){
                         child: Center(
                           child: FittedBox(
                             fit: BoxFit.fitWidth,
-                            child: _image == null ? new Image.network(url,) : new Image.file(_image),
+                            child: new Hero(
+                              child: _image == null ? new Image.network(url,) : new Image.file(_image),
+                              tag: 'Foto Profil',
+                            ),
                           ),
                         ),
                       ),
