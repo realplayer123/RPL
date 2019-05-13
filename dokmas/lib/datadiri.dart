@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'main.dart';
 import 'isidatadiri.dart';
 class DiriPage extends StatefulWidget {
@@ -13,9 +17,31 @@ class DiriPage extends StatefulWidget {
 
 class DiriPageState extends State<DiriPage> {
 
+  File image;
+  
+  final String baseProfilePic =
+      "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
+
+  var url;
+
   @override 
   // ambil data dari cloud firestore
   Widget build(BuildContext context){
+
+    final profpic = Hero(
+      tag: 'hero',
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: CircleAvatar(
+          radius: 72.0,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (image != null) ? Image.file(image,fit:BoxFit.fill):
+              ((NetworkImage(widget.detailsUser.photoUrl) != null)
+              ?(NetworkImage(widget.detailsUser.photoUrl))
+              :NetworkImage(baseProfilePic)),
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text("Data Diri"),
@@ -27,15 +53,7 @@ class DiriPageState extends State<DiriPage> {
             children: <Widget>[
               Container(
                 padding: EdgeInsets.only(top: 100),
-                height: 100,
-                width: 100,
-                decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: new NetworkImage(widget.detailsUser.photoUrl),
-                    fit: BoxFit.cover,
-                  )
-                ),
+                child: profpic,
               ),
             ],
           ),
@@ -86,10 +104,10 @@ class DiriPageState extends State<DiriPage> {
             padding: const EdgeInsets.only(top: 240.0),
             child: Center(
               child: RaisedButton(
-                child: Text("Set Data Diri"),
+                child: Text("UBAH KATA SANDI"),
                 onPressed: () {
                   Navigator.push(context, 
-                  MaterialPageRoute( builder: (context) => IsiDiriPage(widget.detailsUser))
+                  MaterialPageRoute( builder: (context) => LupaPage()),
                   );
                 },
               ),
@@ -99,10 +117,10 @@ class DiriPageState extends State<DiriPage> {
             padding: const EdgeInsets.only(top: 350.0),
             child: Center(
               child: RaisedButton(
-                child: Text("UBAH KATA SANDI"),
+                child: Text("Set Data Diri"),
                 onPressed: () {
                   Navigator.push(context, 
-                  MaterialPageRoute( builder: (context) => LupaPage()),
+                  MaterialPageRoute( builder: (context) => IsiDiriPage(widget.detailsUser))
                   );
                 },
               ),

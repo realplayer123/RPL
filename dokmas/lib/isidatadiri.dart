@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 import 'main.dart';
 
 enum JenisKelamin { laki, perempuan }
@@ -22,37 +27,15 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   String jk = 'Laki-laki';
   final formkey = new GlobalKey<FormState>();
 
-  void _editData() {
-    final CollectionReference ref = Firestore.instance.collection('datadiri');
-    Firestore.instance.runTransaction((Transaction tx) async {
-        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
-        await tx.set(documentReference, <String, dynamic> {
-          'email' : widget.detailsUser.userEmail,
-          'nama' : nama.text,
-          'ktp' : ktp.text,
-          'jk' : jk,
-          'agama' : agamaVal,
-          'lahir' : _lahirTeks,
-        });
-    });
-  }
+  File image;
+  
+  final String baseProfilePic =
+      "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
 
-  void _cariData() {
-      final CollectionReference ref = Firestore.instance.collection('datadiri');
-      Firestore.instance.runTransaction((Transaction tx) async {
-        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
-        await tx.get(documentReference).then(
-          (DocumentSnapshot snaps){
-            nama.text = snaps.data['nama'];
-            ktp.text = snaps.data['ktp'];
-            print(snaps.data['jk']);
-            print(snaps.data['agama']);
-            print(snaps.data['lahir']);
-          }
-        );
-    });
-  }
+  var url;
 
+  bool gantiGambar= false;
+  
   String validateDigit(String value) {
     Pattern pattern =
         r'^-?[0-9]+$';
@@ -89,6 +72,22 @@ class IsiDiriPageState extends State<IsiDiriPage> {
     }
   }
 
+  void _cariData() {
+      final CollectionReference ref = Firestore.instance.collection('datadiri');
+      Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
+        await tx.get(documentReference).then(
+          (DocumentSnapshot snaps){
+            nama.text = snaps.data['nama'];
+            ktp.text = snaps.data['ktp'];
+            print(snaps.data['jk']);
+            print(snaps.data['agama']);
+            print(snaps.data['lahir']);
+          }
+        );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -107,6 +106,60 @@ class IsiDiriPageState extends State<IsiDiriPage> {
   }
 
   Widget build(BuildContext context) {
+    final profpic = Hero(
+      tag: 'hero',
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: CircleAvatar(
+          radius: 72.0,
+          backgroundColor: Colors.transparent,
+          backgroundImage: (image != null) ? Image.file(image,fit:BoxFit.fill):
+              ((NetworkImage(widget.detailsUser.photoUrl) != null)
+              ?(NetworkImage(widget.detailsUser.photoUrl))
+              :NetworkImage(baseProfilePic)),
+        ),
+      ),
+    );
+
+    Future getImage() async{
+      var _img = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+      setState(() {
+       image = _img; 
+       print('Image path $image');
+      });
+    }
+
+    Future uploadPic(BuildContext context) async{
+      String fileNama = basename(image.path);
+      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileNama);
+      StorageUploadTask uploadTask = firebaseStorageRef.putFile(image);
+      var downUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
+      url = downUrl.toString();
+      setState(() {
+       print('Foto Profil Diubah');
+       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Foto Profil Diubah'),)); 
+      });
+    }
+
+    void _editData() {
+    if(gantiGambar) {
+      print('Mencoba upload gambar...');
+      uploadPic(context);
+    }
+    final CollectionReference ref = Firestore.instance.collection('datadiri');
+    Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
+        await tx.set(documentReference, <String, dynamic> {
+          'email' : widget.detailsUser.userEmail,
+          'nama' : nama.text,
+          'ktp' : ktp.text,
+          'jk' : jk,
+          'agama' : agamaVal,
+          'lahir' : _lahirTeks,
+        });
+    });
+  }
 
     List<Widget> inputForm() {
       return [
@@ -172,6 +225,27 @@ class IsiDiriPageState extends State<IsiDiriPage> {
               ),
               textAlign: TextAlign.center,
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(top: 100),
+                child: profpic,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 160),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.camera,
+                    size: 30.0,
+                  ),
+                  onPressed: (){
+                    getImage();
+                  },
+                )
+              ),
+            ],
           ),
           Form(
             key: formkey,
