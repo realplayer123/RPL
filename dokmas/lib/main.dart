@@ -38,7 +38,8 @@ class _SignUpState extends State<SignUpPage> {
   TextEditingController controllerEmail = new TextEditingController();
   TextEditingController controllerUsername = new TextEditingController();
 
-  void _daftarBaru() async {
+  void _daftarBaru(BuildContext cont) async {
+    try {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: controllerEmail.text,
       password: controllerPass.text,
@@ -62,6 +63,12 @@ class _SignUpState extends State<SignUpPage> {
         context,
         MaterialPageRoute(
             builder: (BuildContext context) => HomePage(userbaru)));
+    } catch(e) {
+      print('Wadididadaw ada error : $e');
+      Scaffold.of(cont).showSnackBar(
+        new SnackBar(content: Text('Gagal mendaftarkan akun, cek kembali data yang di masukan'),)
+      );
+    }
   }
 
   AlertDialog submit() {
@@ -184,14 +191,14 @@ class _SignUpState extends State<SignUpPage> {
                         } else if (controllerPass.text !=
                             controllerPassCek.text) {
                           Scaffold.of(cont).showSnackBar(new SnackBar(
-                            content: Text("Kata Sandi Salah !"),
+                            content: Text("Kata Sandi Salah"),
                           ));
                         } else if (controllerPass.text.length < 6) {
                           Scaffold.of(cont).showSnackBar(new SnackBar(
-                            content: Text("Panjang sandi minimal 6 karakter !"),
+                            content: Text("Panjang sandi minimal 6 karakter"),
                           ));
                         } else {
-                          _daftarBaru();
+                          _daftarBaru(cont);
                         }
                       },
                       shape: OutlineInputBorder(
@@ -327,6 +334,7 @@ class LoginPageState extends State<LoginPage> {
   String _pass;
   String _usernames;
   bool bisaMasuk;
+
   final String currentProfilePic =
       "https://www.shareicon.net/data/128x128/2017/02/07/878237_user_512x512.png";
   final formKey = new GlobalKey<FormState>();
@@ -507,10 +515,8 @@ class LoginPageState extends State<LoginPage> {
       new Padding(padding: new EdgeInsets.only(top: 4.0)),
       new TextFormField(
           controller: _emailController,
-          validator: (value) {
-            if (value.isEmpty) return "Masukan Email";
-            if (value.length < 5) return "Email terlalu pendek";
-          },
+          keyboardType: TextInputType.emailAddress,
+          validator: validateEmail,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             hintText: "Email",
@@ -565,6 +571,16 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     ];
+  }
+
+  String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Alamat Email tidak sah';
+    else
+      return null;
   }
 }
 

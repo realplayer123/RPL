@@ -13,8 +13,14 @@ class IsiDiriPage extends StatefulWidget {
 }
 
 class IsiDiriPageState extends State<IsiDiriPage> {
-  String nama = '';
-  String ktp = '';
+  TextEditingController nama = new TextEditingController();
+  TextEditingController ktp = new TextEditingController();
+  DateTime _lahir = new DateTime.now();
+  String _lahirTeks = '';
+  String agamaVal = 'Islam';
+  JenisKelamin _jk = JenisKelamin.laki;
+  String jk = 'Laki-laki';
+  final formkey = new GlobalKey<FormState>();
 
   void _editData() {
     final CollectionReference ref = Firestore.instance.collection('datadiri');
@@ -22,8 +28,8 @@ class IsiDiriPageState extends State<IsiDiriPage> {
         DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
         await tx.set(documentReference, <String, dynamic> {
           'email' : widget.detailsUser.userEmail,
-          'nama' : nama,
-          'ktp' : ktp,
+          'nama' : nama.text,
+          'ktp' : ktp.text,
           'jk' : jk,
           'agama' : agamaVal,
           'lahir' : _lahirTeks,
@@ -31,8 +37,41 @@ class IsiDiriPageState extends State<IsiDiriPage> {
     });
   }
 
-  DateTime _lahir = new DateTime.now();
-  String _lahirTeks = '';
+  void _cariData() {
+      final CollectionReference ref = Firestore.instance.collection('datadiri');
+      Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentReference documentReference = ref.document(widget.detailsUser.userEmail);
+        await tx.get(documentReference).then(
+          (DocumentSnapshot snaps){
+            nama.text = snaps.data['nama'];
+            ktp.text = snaps.data['ktp'];
+            print(snaps.data['jk']);
+            print(snaps.data['agama']);
+            print(snaps.data['lahir']);
+          }
+        );
+    });
+  }
+
+  String validateDigit(String value) {
+    Pattern pattern =
+        r'^-?[0-9]+$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Data harus berupa bilangan';
+    else
+      return null;
+  }
+
+  String validateAlpha(String value) {
+    Pattern pattern =
+        r'^[a-zA-Z ]+$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Data harus berupa huruf';
+    else
+      return null;
+  }
 
   Future<Null> _pilihLahir(BuildContext context) async {
     final pilih = await showDatePicker(
@@ -50,36 +89,44 @@ class IsiDiriPageState extends State<IsiDiriPage> {
     }
   }
 
-  String agamaVal = 'Islam';
-  JenisKelamin _jk = JenisKelamin.laki;
-  String jk = 'Laki-laki';
-
   @override
   void initState() {
     super.initState();
     _lahirTeks = '${_lahir.day}/${_lahir.month}/${_lahir.year}';
+    _cariData();
+  }
+
+  bool validasi() {
+    final formnya = formkey.currentState;
+    if(formnya.validate()){
+      formnya.save();
+      return true;
+    }else{
+      return false;
+    }
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Edit Data Diri"),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Padding(
+
+    List<Widget> inputForm() {
+      return [
+        Padding(
             padding: const EdgeInsets.only(top: 32.0, left: 32.0, right: 32.0),
             child: Row(
               children: <Widget>[
-                Text("Nama :"),
+                Padding(
+                  padding: const EdgeInsets.only(bottom :24.0, right: 8.0),
+                  child: Text("Nama"),
+                ),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
+                    validator: validateAlpha,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    ),
                     maxLength: 40,
-                    onChanged: (String str) {
-                      setState(() {
-                        nama = str;
-                      });
-                    },
+                    controller: nama,
                   ),
                 ),
               ],
@@ -89,18 +136,47 @@ class IsiDiriPageState extends State<IsiDiriPage> {
             padding: const EdgeInsets.only(top: 8.0, left: 32.0, right: 32.0),
             child: Row(
               children: <Widget>[
-                Text("No KTP :"),
+                Padding(
+                  padding: const EdgeInsets.only(bottom :24.0, right: 8.0),
+                  child: Text("No KTP"),
+                ),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
+                    validator: validateDigit,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    ),
                     maxLength: 20,
-                    onChanged: (String str) {
-                      setState(() {
-                        ktp = str;
-                      });
-                    },
+                    controller: ktp,
                   ),
                 ),
               ],
+            ),
+          ),
+      ];
+    } 
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Set Data Diri"),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top : 20.0, left: 20.0, right: 20.0),
+            child: Text(
+              "Perhatikan setiap data yang akan di set untuk ditampilkan sebagai informasi.",
+              style: TextStyle(
+                color: Colors.black45,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Form(
+            key: formkey,
+            child: Column(
+              children: inputForm(),
             ),
           ),
           Padding(
@@ -187,10 +263,12 @@ class IsiDiriPageState extends State<IsiDiriPage> {
             padding: EdgeInsets.only(top: 16.0, left: 32.0, right: 32.0),
             child: RaisedButton(
               onPressed: () {
-                _editData();
-                Navigator.pop(context);
+                if(validasi()){
+                  _editData();
+                  Navigator.pop(context);
+                }
               },
-              child: Text("Edit"),
+              child: Text("Set Data"),
             ),
           )),
         ],
