@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
@@ -47,6 +48,7 @@ class DiriPageState extends State<DiriPage> {
                   widget.detailsUser.userName, 
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 23.0,
                   ),
                 ),
               ),
@@ -56,11 +58,12 @@ class DiriPageState extends State<DiriPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 140.0),
+                padding: EdgeInsets.only(top: 150.0),
                 child: Text(
                   widget.detailsUser.userEmail, 
                   style: TextStyle(
                     color: Colors.black54,
+                    fontSize: 22.0
                   ),
                 ),
               ),
@@ -79,14 +82,30 @@ class DiriPageState extends State<DiriPage> {
               return new KeteranganDiri(document : snapshot.data.documents);
             },
           ),
-          Center(
-            child: RaisedButton(
-              child: Text("Set Data Diri"),
-              onPressed: () {
-                Navigator.push(context, 
-                MaterialPageRoute( builder: (context) => IsiDiriPage(widget.detailsUser))
-                );
-              },
+          Padding(
+            padding: const EdgeInsets.only(top: 240.0),
+            child: Center(
+              child: RaisedButton(
+                child: Text("Set Data Diri"),
+                onPressed: () {
+                  Navigator.push(context, 
+                  MaterialPageRoute( builder: (context) => IsiDiriPage(widget.detailsUser))
+                  );
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 350.0),
+            child: Center(
+              child: RaisedButton(
+                child: Text("UBAH KATA SANDI"),
+                onPressed: () {
+                  Navigator.push(context, 
+                  MaterialPageRoute( builder: (context) => LupaPage()),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -111,7 +130,7 @@ class KeteranganDiri extends StatelessWidget {
         String lahir = document[i].data['lahir'].toString();
         
         return Padding(
-          padding: const EdgeInsets.only(top : 180.0),
+          padding: const EdgeInsets.only(top : 200.0),
           child: Row(
             mainAxisAlignment:MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -120,34 +139,39 @@ class KeteranganDiri extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text("Nama :"),
+                        Text("Nama :", style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text("No KTP :"),
+                        Text("No KTP :", style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text("Seks :"),
+                        Text("Gender :", style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text("Agama :"),
+                        Text("Agama :", style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text("Lahir :"),
+                        Text("Lahir :", style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
                   ],
@@ -158,34 +182,39 @@ class KeteranganDiri extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(nama),
+                        Text(nama, style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(ktp),
+                        Text(ktp, style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(jk),
+                        Text(jk, style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(agama),
+                        Text(agama, style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
+                    new Padding(padding: EdgeInsets.only(top: 20.0),),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(lahir),
+                        Text(lahir, style: TextStyle(fontSize: 18.0),),
                       ],
                     ),
                   ],

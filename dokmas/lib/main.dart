@@ -222,19 +222,23 @@ class LupaPage extends StatefulWidget {
 
 class LupaPageState extends State<LupaPage> {
   String _tempEmail;
-  bool _kondisi;
-  void _lupaPass() async {
+  
+  void _lupaPass(BuildContext conts) async {
     print("ini _tempEmail : $_tempEmail");
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: _tempEmail)
           .catchError((onError) {
+            Scaffold.of(conts).showSnackBar(new SnackBar(
+              content: Text('Terjadi Kesalahan'),
+            ));
+            
         print('Dapet error : $onError');
-        _kondisi = false;
+        
       });
     } on PlatformException catch (e) {
       print(' Wadidaw error : ${e.message}');
-      _kondisi = false;
+      
     }
   }
 
@@ -242,13 +246,12 @@ class LupaPageState extends State<LupaPage> {
   void initState() {
     super.initState();
     _tempEmail = '';
-    _kondisi = true;
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lupa Sandi"),
+        title: Text("Reset Sandi"),
       ),
       body: Builder(
         builder: (BuildContext conts) => ListView(
@@ -284,16 +287,7 @@ class LupaPageState extends State<LupaPage> {
                     color: Colors.blueAccent,
                     child: MaterialButton(
                       onPressed: () {
-                        _lupaPass();
-                        if (_kondisi) {
-                          Scaffold.of(conts).showSnackBar(new SnackBar(
-                            content: Text('Mengirim Email'),
-                          ));
-                        } else {
-                          Scaffold.of(conts).showSnackBar(new SnackBar(
-                            content: Text('Terjadi Kesalahan'),
-                          ));
-                        }
+                        _lupaPass(conts);
                       },
                       child: Text('Atur Ulang Sandi',
                           style: TextStyle(color: Colors.white)),
@@ -628,6 +622,7 @@ class HomePage extends StatelessWidget {
                       builder: (context) => DiriPage(detailsUser)));
             },
           ),
+          
           Divider(),
           ListTile(
             title: Text('Keluar'),

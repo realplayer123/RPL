@@ -53,10 +53,10 @@ class _DokisiPageState extends State<DokisiPage> {
 
   String validateDigit(String value) {
     Pattern pattern =
-        r'^-?[0-9]+$';
+        r'^-?[a-zA-Z0-9/]+$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value))
-      return 'Data harus berupa bilangan';
+      return 'Nomor tidak valid';
     else
       return null;
   }

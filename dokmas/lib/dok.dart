@@ -75,7 +75,7 @@ class DokumenList extends StatelessWidget {
               
               children: <Widget>[
                 new IconButton(
-                  color: Colors.lightBlue,
+                  color: Colors.blue,
                   icon: Icon(Icons.edit),
                   onPressed: (){
                     Navigator.of(context).push(new MaterialPageRoute(
@@ -91,17 +91,27 @@ class DokumenList extends StatelessWidget {
                 ),
                 new Expanded(
                   child: Container(
-                    color: Colors.lightBlueAccent,
+                    color: Colors.blue,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(left : 32.0, top: 16.0, bottom: 4.0,),
-                          child: Text(jenis, textAlign: TextAlign.left, style: new TextStyle(fontSize: 20.0, letterSpacing: 1.0, fontWeight: FontWeight.bold),),
+                          child: Text(jenis, textAlign: TextAlign.left, style: new TextStyle(
+                            fontSize: 20.0, 
+                            letterSpacing: 1.0, 
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            ),),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left : 32.0, bottom: 24.0),
-                          child: Text(nomor, textAlign: TextAlign.left, style: new TextStyle(fontSize: 10.0, letterSpacing: 1.0),),
+                          child: Text(nomor, textAlign: TextAlign.left, style: new TextStyle(
+                            fontSize: 10.0, 
+                            letterSpacing: 1.0,
+                            color: Colors.white,
+                            ),
+                          ),
                         ),
                         
                       ],

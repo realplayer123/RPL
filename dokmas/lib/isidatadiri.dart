@@ -125,7 +125,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
                       contentPadding: EdgeInsets.only(top: 20.0, left: 8.0, right: 8.0),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
                     ),
-                    maxLength: 40,
+                    maxLength: 32,
                     controller: nama,
                   ),
                 ),
