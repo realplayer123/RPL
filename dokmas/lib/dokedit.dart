@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
-class EditData extends StatefulWidget{
+class EditData extends StatefulWidget {
   EditData({this.jenis, this.deskripsi, this.gambar, this.nomor, this.index});
   final String nomor;
   final String jenis;
@@ -17,7 +17,7 @@ class EditData extends StatefulWidget{
   _EditDataState createState() => new _EditDataState();
 }
 
-class _EditDataState extends State<EditData>{
+class _EditDataState extends State<EditData> {
   String jenis;
 
   TextEditingController controllerNomor;
@@ -29,10 +29,10 @@ class _EditDataState extends State<EditData>{
   var url;
   bool gantiGambar;
 
-  picker() async{
+  picker() async {
     gantiGambar = true;
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    if(image!=null){
+    if (image != null) {
       setState(() {
         _image = image;
         print('Image Path $_image');
@@ -41,108 +41,108 @@ class _EditDataState extends State<EditData>{
     }
   }
 
-  Future uploadPic() async{
-    
+  Future uploadPic() async {
     String fileName = basename(_image.path);
-    StorageReference firebaseStoragRef = FirebaseStorage.instance.ref().child(fileName);
+    StorageReference firebaseStoragRef =
+        FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = firebaseStoragRef.putFile(_image);
     var downUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     url = downUrl.toString();
     print('Upload gambar berlangsung...');
-    Firestore.instance.runTransaction((Transaction transaction) async{
-      DocumentSnapshot snapshot =
-      await transaction.get(widget.index);
-      await transaction.update(snapshot.reference,{
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(widget.index);
+      await transaction.update(snapshot.reference, {
         "gambar": url,
       });
       print("url yang di upload itu ini $url");
     });
   }
 
-void _edit(){
-  print('di sini ganti gambar : $gantiGambar');
-  if(gantiGambar) {
-    print('Mencoba upload gambar...');
-    uploadPic();
+  void _edit() {
+    print('di sini ganti gambar : $gantiGambar');
+    if (gantiGambar) {
+      print('Mencoba upload gambar...');
+      uploadPic();
+    }
+
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(widget.index);
+      await transaction.update(snapshot.reference, {
+        "jenis": jenis,
+        "deskripsi": desk,
+        "nomor": no,
+        "scan": url,
+      });
+    });
   }
 
-  Firestore.instance.runTransaction((Transaction transaction) async{
-    DocumentSnapshot snapshot =
-    await transaction.get(widget.index);
-    await transaction.update(snapshot.reference,{
-      "jenis": jenis,
-      "deskripsi": desk,
-      "nomor" : no,
-      "scan": url,
-    });
-  });
-}
-
-@override
-void initState(){
-  super.initState();
-  gantiGambar = false;
-  jenis = widget.jenis;
-  desk = widget.deskripsi;
-  controllerDeskripsi = new TextEditingController(text: widget.deskripsi);
-  controllerNomor = new TextEditingController(text: widget.nomor);
-  no = widget.nomor;
-  url = widget.gambar;
-}
+  @override
+  void initState() {
+    super.initState();
+    gantiGambar = false;
+    jenis = widget.jenis;
+    desk = widget.deskripsi;
+    controllerDeskripsi = new TextEditingController(text: widget.deskripsi);
+    controllerNomor = new TextEditingController(text: widget.nomor);
+    no = widget.nomor;
+    url = widget.gambar;
+  }
 
   @override
-  Widget build(BuildContext context){
-    return new Scaffold(
-      appBar: new AppBar(
-        //leading: new Icon(Icons, list) buat icon
-        title: new Text("Lihat Dokumen"),
-        backgroundColor: Colors.indigo,
+  Widget build(BuildContext context) {
+    var gambarDokumen = new Container(
+      width: 200,
+      child: PhotoHero(
+        photo: _image,
+        width: double.infinity,
+        url: url,
+        onTap: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+            return Scaffold(
+              body: Container(
+                color: Colors.white,
+                child: Center(
+                  child: PhotoHero(
+                    photo: _image,
+                    width: double.infinity,
+                    url: url,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
+            );
+          }));
+        },
       ),
-      body: new ListView(
-        children: <Widget>[
-          new Container(
-            padding: new EdgeInsets.all(10),
+    );
+    return new Scaffold(
+        appBar: new AppBar(
+          //leading: new Icon(Icons, list) buat icon
+          title: new Text("Lihat Dokumen"),
+          backgroundColor: Colors.indigo,
+        ),
+        body: new ListView(
+          children: <Widget>[
+            new Container(
+              padding: new EdgeInsets.all(10),
               child: new Column(
                 children: <Widget>[
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
-                  new Container(
-                        width: double.infinity,
-                        child: PhotoHero(
-                          photo: _image,
-                          width: 100,
-                          url: url,
-                          onTap: (){
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context){
-                                  return Scaffold(
-                                    body: Container(
-                                      color: Colors.white,
-                                      child: Center(
-                                        child: PhotoHero(
-                                          photo: _image,
-                                          width: double.infinity,
-                                          url: url,
-                                          onTap: (){
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              )
-                            );
-                          },
-                        ),
-                      ),
+                  gambarDokumen,
                   new Row(
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Jenis Dokumen :", style:  new TextStyle(fontSize: 20.0, color: Colors.black87)),
+                        child: Text("Jenis Dokumen :",
+                            style: new TextStyle(
+                                fontSize: 20.0, color: Colors.black87)),
                       ),
-                      new SizedBox(width: 20.0,),
+                      new SizedBox(
+                        width: 20.0,
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: DropdownButton(
@@ -169,64 +169,57 @@ void initState(){
                       ),
                     ],
                   ),
-
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
                   new TextField(
                     controller: controllerNomor,
-                    onChanged: (String s){
+                    onChanged: (String s) {
                       setState(() {
                         no = s;
                       });
                     },
                     decoration: new InputDecoration(
-                      labelText: "Nomor",
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(20.0)
-                      )
-                    ),
+                        labelText: "Nomor",
+                        border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(20.0))),
                   ),
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
                   new TextField(
                     maxLines: 5,
                     controller: controllerDeskripsi,
-                    onChanged: (String s){
+                    onChanged: (String s) {
                       setState(() {
                         desk = s;
                       });
                     },
                     decoration: new InputDecoration(
-                      labelText: "Deskripsi",
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(20.0)
-                      )
-                    ),
+                        labelText: "Deskripsi",
+                        border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(20.0))),
                   ),
-
                   new Padding(padding: new EdgeInsets.only(top: 20.0)),
-                  
                   new RaisedButton(
                     child: new Text("Ubah Dokumen"),
-                    onPressed: (){
+                    onPressed: () {
                       _edit();
                       Navigator.pop(context);
                     },
                   ),
                 ],
               ),
-          )
-        ],
-      ),
-      floatingActionButton: new FloatingActionButton(
-            onPressed: picker, 
-            tooltip: 'Pick Image',
-            child: new Icon(Icons.camera),
-      )
-    );
+            )
+          ],
+        ),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: picker,
+          tooltip: 'Pick Image',
+          child: new Icon(Icons.camera),
+        ));
   }
 }
 
 class PhotoHero extends StatelessWidget {
-  const PhotoHero({ Key key, this.photo, this.onTap, this.width, this.url }) : super(key: key);
+  const PhotoHero({Key key, this.photo, this.onTap, this.width, this.url})
+      : super(key: key);
 
   final File photo;
   final VoidCallback onTap;
