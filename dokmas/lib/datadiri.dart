@@ -142,8 +142,9 @@ class KeteranganDiri extends StatelessWidget {
         String ktp = document[i].data['ktp'].toString();
         String jk = document[i].data['jk'].toString();
         String agama = document[i].data['agama'].toString();
-        String lahir = document[i].data['lahir'].toString();
-        
+        DateTime _lahir = document[i].data['lahir'];
+        String lahir = "${_lahir.day}/${_lahir.month}/${_lahir.year}";
+
         return Padding(
           padding: const EdgeInsets.only(top : 260.0),
           child: Row(
