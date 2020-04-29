@@ -21,7 +21,7 @@ Dokmas is developed with Flutter using dart language and Firebase as database sy
 
 1. [Install Flutter and IDE](https://flutter.dev/docs/get-started/install)
 2. Clone this repository
-3. Open the code in IDE and run these commands below:
+3. Open the code under the folder [`dokmas`](https://github.com/ddhira123/RPL/tree/master/dokmas) in IDE and run these commands below:
 ```
 flutter doctor -v
 ```
