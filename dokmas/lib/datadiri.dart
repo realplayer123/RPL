@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
 import 'isidatadiri.dart';
+import 'lupapassword.dart';
+
 class DiriPage extends StatefulWidget {
   DiriPage(this.detailsUser);
   final UserDetails detailsUser;
@@ -142,7 +144,7 @@ class KeteranganDiri extends StatelessWidget {
         String ktp = document[i].data['ktp'].toString();
         String jk = document[i].data['jk'].toString();
         String agama = document[i].data['agama'].toString();
-        DateTime _lahir = document[i].data['lahir'];
+        DateTime _lahir = DateTime.parse(document[i].data['lahir'].toDate().toString());
         String lahir = "${_lahir.day}/${_lahir.month}/${_lahir.year}";
 
         return Padding(

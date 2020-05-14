@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "394664023708-csga27vqff7t9cs4v4o1tulld4a7ndev.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.rpl.dokmas",
+            "certificate_hash": "1eea952548a9d5b63818c83bd72af58cb3dfe572"
+          }
+        },
+        {
           "client_id": "394664023708-q1pr9k9ulkslmn1iufkh24ovqtuf78iu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
