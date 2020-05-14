@@ -134,12 +134,13 @@ class DiriPageState extends State<DiriPage> {
 class KeteranganDiri extends StatelessWidget {
   KeteranganDiri({this.document});
   final List<DocumentSnapshot> document;
-
+  
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(
       itemCount: document.length,
       itemBuilder: (BuildContext context, int i){
+        print(i.toString());
         String nama = document[i].data['nama'].toString();
         String ktp = document[i].data['ktp'].toString();
         String jk = document[i].data['jk'].toString();

@@ -12,7 +12,6 @@ enum JenisKelamin { laki, perempuan }
 class IsiDiriPage extends StatefulWidget {
   IsiDiriPage(this.detailsUser);
   final UserDetails detailsUser;
-
   @override
   IsiDiriPageState createState() => IsiDiriPageState();
 }
@@ -70,7 +69,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
       context: context,
       firstDate: DateTime(1930),
       initialDate: DateTime.now(),
-      lastDate: DateTime(2020),
+      lastDate: DateTime(2050),
     );
 
     if (pilih != null) {
@@ -123,7 +122,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
         child: CircleAvatar(
           radius: 72.0,
           backgroundColor: Colors.transparent,
-          backgroundImage: (image != null) ? Image.file(image,fit:BoxFit.fill):
+          backgroundImage: (this.image != null) ? Image.file(image,fit:BoxFit.fill):
               ((NetworkImage(widget.detailsUser.photoUrl) != null)
               ?(NetworkImage(widget.detailsUser.photoUrl))
               :NetworkImage(baseProfilePic)),
@@ -135,7 +134,7 @@ class IsiDiriPageState extends State<IsiDiriPage> {
       var _img = await ImagePicker.pickImage(source: ImageSource.gallery);
 
       setState(() {
-       image = _img; 
+       this.image = _img; 
        print('Image path $image');
       });
     }
